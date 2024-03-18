@@ -11,17 +11,17 @@ const swaggerOptions = {
       description: 'API for managing blogs, users, comments, and likes',
     
     },
-    // servers: [
-    //   {
-    //     url: 'http://localhost:5546',
-    //     description: 'Local',
-    //   }
-      // {
-      //   url:'https://mukamabrand202.onrender.com',
-      //   description: 'Production',
-      // }
+    servers: [
+      {
+        url: 'http://localhost:5646',
+        description: 'Local',
+      },
+      {
+        url:'https://mybrand-backend-up13.onrender.com',
+        description: 'Production',
+      }
       
-    // ],
+    ],
 
    
     components:{

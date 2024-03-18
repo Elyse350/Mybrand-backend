@@ -10,12 +10,12 @@ import mongoose from 'mongoose';
 //create blog
 export const createBlog = async (req: CustomRequest, res: Response) => {
     try {
-        const { title, content, imageURL } = req.body;
+        const { title, category, description } = req.body;
         const newBlog = new Blog({
             title,
-            content,
-            imageURL,
-            author: req.id // Use the logged-in user's ID as the author
+            category,
+            description,
+            // author: req.id // Use the logged-in user's ID as the author
         });
         await newBlog.save();
         res.status(201).json({ message: 'Blog created successfully', blog: newBlog });
@@ -65,10 +65,10 @@ export const editBlog = async (req: CustomRequest, res: Response) => {
             return res.status(403).json({ message: 'Only admin can edit blogs' });
         }
         // Update the blog
-        const { title, content, imageURL } = req.body;
+        const { title, category, description } = req.body;
         blog.title = title;
-        blog.content = content;
-        blog.imageURL = imageURL;
+        blog.category = category;
+        blog.description = description;
         await blog.save();
         res.status(200).json({ message: 'Blog updated successfully', blog });
     } catch (error: any) {
@@ -86,9 +86,9 @@ export const deleteBlog = async (req: CustomRequest, res: Response) => {
             return res.status(404).json({ message: 'Blog not found' });
         }
         // Check if the user is the author or an admin
-        if (blog.author.toString() !== req.id && (!user || user.userRole !== 'admin')) {
-            return res.status(403).json({ message: 'You are not authorized to delete this blog' });
-        }
+        // if (blog.author.toString() !== req.id && (!user || user.userRole !== 'admin')) {
+        //     return res.status(403).json({ message: 'You are not authorized to delete this blog' });
+        // }
         await Blog.deleteOne({ _id: blog._id });
         res.status(200).json({ message: 'Blog deleted successfully' });
     } catch (error: any) {

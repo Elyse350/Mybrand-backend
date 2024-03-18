@@ -1,16 +1,16 @@
 //models/ user_routes.ts
-
+import  express  from 'express';
+import path from 'path';
 import { Router } from 'express';
 import { registerUser,
      loginUser,
      getAllUsers,
-     logoutUser
-
-} from '../controllers/user_controllers';
+     logoutUser} from '../controllers/user_controllers';
 
 
 const router = Router();
-export default router;
+
+
 /**
  * @openapi
  * components:
@@ -139,3 +139,4 @@ router.get('/users/logout',logoutUser);
 
 
 
+export default router;

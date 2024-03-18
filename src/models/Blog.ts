@@ -4,9 +4,9 @@ import mongoose, { Schema, Document,Types } from 'mongoose';
 export interface IBlog extends Document {
     _id: Types.ObjectId;
     title: string;
-    content: string;
-    imageURL: string;
-    author: Types.ObjectId[];
+    category: string;
+    description: string;
+    // author: Types.ObjectId[];
     comments:Types.ObjectId[];
     likes:Types.ObjectId[]; // Change this to an array of ObjectId references
     dislikes:Types.ObjectId[]; // Change this to an array of ObjectId references
@@ -18,11 +18,11 @@ const blogSchema: Schema = new Schema<IBlog>({
         type: String,
         required: true
     },
-    content:{
+    category:{
         type: String,
         required: true
     },
-    imageURL:{
+    description:{
         type: String,
         required: true
     },
@@ -34,10 +34,10 @@ const blogSchema: Schema = new Schema<IBlog>({
         type: Schema.Types.ObjectId,
         ref: 'Comment'
     }],
-    author:[{
-        type: Schema.Types.ObjectId,
-        ref: 'User'
-    }],
+    // author:[{
+    //     type: Schema.Types.ObjectId,
+    //     ref: 'User'
+    // }],
     likes:{
         type: [
             {

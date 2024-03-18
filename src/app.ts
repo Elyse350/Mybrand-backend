@@ -16,6 +16,13 @@ import cookieParser from 'cookie-parser';
 const app = express();
  app.use(express.json());
 
+ app.use(cors({
+   credentials:true,
+}))
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
+ extended: true
+}));
  
 
 
@@ -50,16 +57,16 @@ app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 
 
-// // Middleware
-// const corsOptions = {
-//   origin: ['http://localhost:3000'],
-//   methods: 'GET,PUT,POST,DELETE',
-//   allowedHeaders: 'Content-Type, Authorization',
-// };
-// app.use(cors(corsOptions));
-// app.use(bodyParser.json());
-// app.use(bodyParser.urlencoded({ extended: true }));
-// app.use(express.json());
+// Middleware
+const corsOptions = {
+  origin: ['http://localhost:5646'],
+  methods: 'GET,PUT,POST,DELETE',
+  allowedHeaders: 'Content-Type, Authorization',
+};
+app.use(cors(corsOptions));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.json());
 
 
 
@@ -67,7 +74,7 @@ app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 // app.use(cookieParser());
 // app.use(session({
-//   secret: process.env.SESSION_SECRET!,
+//   secret: process.env.SESSION_KEY!,
 //   resave: false,
 //   saveUninitialized: true,
 //   cookie: { secure: false },
@@ -102,7 +109,7 @@ app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 // app.use('/', commentsRoutes); // Using commentsRoutes for '/comments' route
 
 
-// export default app;
+export default app;
 
 
 

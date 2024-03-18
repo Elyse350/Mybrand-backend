@@ -2,7 +2,7 @@
 import mongoose, { Schema, Document,Types } from 'mongoose';
 export interface IUser extends Document {
     _id: Types.ObjectId;
-    username: string;
+    fullname: string;
     email: string;
     password: string;
     userRole: string;
@@ -10,7 +10,7 @@ export interface IUser extends Document {
 }
 
 const userSchema: Schema = new Schema<IUser>({
-    username:{
+    fullname:{
         type: String,
         required: true
     },
