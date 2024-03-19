@@ -1,20 +1,24 @@
 //models/blog_controllers.ts
 
-import express, {Request,Response,Application,NextFunction} from 'express';
+import express, { Request, Response, Application, NextFunction } from 'express';
 import Blog from '../models/Blog';
 import User from '../models/User';
-import {CustomRequest} from './user_controllers';
+import { CustomRequest } from './user_controllers';
 import mongoose from 'mongoose';
+import multer from 'multer';
+import path from 'path';
 
 
 //create blog
-export const createBlog = async (req: CustomRequest, res: Response) => {
+export const createBlog = async (req: Request, res: Response) => {
+
     try {
         const { title, category, description } = req.body;
         const newBlog = new Blog({
             title,
             category,
             description,
+            image: req.file?.path?.replace('public', ''),
             // author: req.id // Use the logged-in user's ID as the author
         });
         await newBlog.save();
@@ -30,8 +34,9 @@ export const getAllBlogs = async (req: Request, res: Response) => {
     try {
         const blogs = await Blog.find();
         res.status(200).json({
-            allBlogs:"All Blogs", 
-            blogs });
+            allBlogs: "All Blogs",
+            blogs
+        });
     } catch (error: any) {
         res.status(500).json({ message: error.message });
     }
@@ -98,44 +103,44 @@ export const deleteBlog = async (req: CustomRequest, res: Response) => {
 
 export const postLike = async (req: CustomRequest, res: Response) => {
     try {
-      const userId = req.id; // Get the user ID from the authenticated request
-      const blogId = req.params.blogId;
-  
-      if (!userId) {
-        return res.status(400).json({ message: 'Missing user ID' });
-      }
-  
-      // Ensure both user ID and blog ID are valid ObjectIds
-      const validUserId = new mongoose.Types.ObjectId(userId);
-      const validBlogId = new mongoose.Types.ObjectId(blogId);
-  
-      // Find the blog and user
-      const blog = await Blog.findById(validBlogId);
-      const user = await User.findById(validUserId);
-  
-      if (!blog || !user) {
-        return res.status(404).json({ message: 'Blog or user not found' });
-      }
-  
-      // Check if the user has already liked the blog
-      if (blog.likes.includes(validUserId)) {
-        
-        //update likes
-        await Blog.findByIdAndUpdate(validBlogId, { $push: { likes: validUserId } });
+        const userId = req.id; // Get the user ID from the authenticated request
+        const blogId = req.params.blogId;
 
-        return res.status(400).json({ message: 'User has already liked the blog' });
-      }
-  
-      // Add the user's id to the likes array of the blog
-      blog.likes.push(validUserId);
-      await blog.save();
-  
-      res.status(200).json({ message: 'Like posted successfully' });
+        if (!userId) {
+            return res.status(400).json({ message: 'Missing user ID' });
+        }
+
+        // Ensure both user ID and blog ID are valid ObjectIds
+        const validUserId = new mongoose.Types.ObjectId(userId);
+        const validBlogId = new mongoose.Types.ObjectId(blogId);
+
+        // Find the blog and user
+        const blog = await Blog.findById(validBlogId);
+        const user = await User.findById(validUserId);
+
+        if (!blog || !user) {
+            return res.status(404).json({ message: 'Blog or user not found' });
+        }
+
+        // Check if the user has already liked the blog
+        if (blog.likes.includes(validUserId)) {
+
+            //update likes
+            await Blog.findByIdAndUpdate(validBlogId, { $push: { likes: validUserId } });
+
+            return res.status(400).json({ message: 'User has already liked the blog' });
+        }
+
+        // Add the user's id to the likes array of the blog
+        blog.likes.push(validUserId);
+        await blog.save();
+
+        res.status(200).json({ message: 'Like posted successfully' });
     } catch (error: any) {
-      res.status(500).json({ message: error.message });
+        res.status(500).json({ message: error.message });
     }
-  };
-  
+};
+
 
 
 
@@ -145,27 +150,27 @@ export const postLike = async (req: CustomRequest, res: Response) => {
 export const postDislike = async (req: CustomRequest, res: Response) => {
     try {
         const userId = req.id; // Get the user ID from the authenticated request
-        const blogId = req.params.blogId;   
-        
+        const blogId = req.params.blogId;
+
         if (!userId) {
             return res.status(400).json({ message: 'Missing user ID' });
-          }
+        }
 
-          
-      // Ensure both user ID and blog ID are valid ObjectIds
-      const validUserId = new mongoose.Types.ObjectId(userId);
-      const validBlogId = new mongoose.Types.ObjectId(blogId);
-  
-      // Find the blog and user
-      const blog = await Blog.findById(validBlogId);
-      const user = await User.findById(validUserId);
-        
+
+        // Ensure both user ID and blog ID are valid ObjectIds
+        const validUserId = new mongoose.Types.ObjectId(userId);
+        const validBlogId = new mongoose.Types.ObjectId(blogId);
+
+        // Find the blog and user
+        const blog = await Blog.findById(validBlogId);
+        const user = await User.findById(validUserId);
+
         if (!blog || !user) {
             return res.status(404).json({ message: 'Blog or user not found' });
         }
-        
-    
-        
+
+
+
         // Check if the user has already disliked the blog
         if (blog.dislikes.includes(validUserId)) {
             // update dislikes
@@ -173,11 +178,11 @@ export const postDislike = async (req: CustomRequest, res: Response) => {
 
             return res.status(400).json({ message: 'User has already disliked the blog' });
         }
-        
+
         // Add the user's id to the dislikes array of the blog
         blog.dislikes.push(validUserId);
         await blog.save();
-        
+
         res.status(200).json({ message: 'Dislike posted successfully' });
     } catch (error: any) {
         res.status(500).json({ message: error.message });
@@ -209,7 +214,7 @@ export const countDislikes = async (req: Request, res: Response) => {
         if (!blog) {
             return res.status(404).json({ message: 'Blog not found' });
         }
-        const dislikeCount=blog.dislikes.length;
+        const dislikeCount = blog.dislikes.length;
         res.status(200).json({ dislikes: dislikeCount });
     } catch (error: any) {
         res.status(500).json({ message: error.message });
@@ -226,7 +231,7 @@ export const countComments = async (req: Request, res: Response) => {
         if (!blog) {
             return res.status(404).json({ message: 'Blog not found' });
         }
-        const commentCount=blog.comments.length;
+        const commentCount = blog.comments.length;
         res.status(200).json({ comments: commentCount });
     } catch (error: any) {
         res.status(500).json({ message: error.message });

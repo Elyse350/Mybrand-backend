@@ -1,17 +1,22 @@
 // routes/blog_routes.ts
 
 import express from 'express';
-import { createBlog, getAllBlogs, getBlogById,
+import multer, { Multer } from 'multer';
+import path from 'path';
+import {
+     createBlog, getAllBlogs, getBlogById,
      editBlog, deleteBlog,
      postDislike,
      postLike,
      countLikes,
      countDislikes,
      countComments
-     } from '../controllers/blog_controllers';
+} from '../controllers/blog_controllers';
 import { authMiddleWare } from '../controllers/user_controllers';
 
 const router = express.Router();
+
+interface UploadedFile extends Express.Multer.File { }
 
 /**
  * @openapi
@@ -113,7 +118,31 @@ router.get('/blogs/:id', getBlogById);
  *             schema:
  *               $ref: '#/components/schemas/Blog'
  */
-router.post('/blogs',authMiddleWare,createBlog);
+
+// configure muler
+const multerStorage = multer.diskStorage({
+     destination: function (req, file, cb) {
+          cb(null, './public/images/');
+     },
+     filename: function (req, file, cb) {
+          cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
+     }
+});
+const multerFilter = (req: Request, file: UploadedFile, cb: Function) => {
+
+     if (!file.originalname.match(/\.(png|jpg)$/)) {
+          // upload only png and jpg format
+          return cb(new Error('Please upload a Image'))
+     }
+     cb(null, true)
+
+};
+
+const upload = multer({
+     storage: multerStorage,
+     // fileFilter: multerFilter
+});
+router.post('/blogs', authMiddleWare, upload.single('image'), createBlog);
 
 
 

@@ -11,6 +11,7 @@ import commentsRoutes from './routers/comments_routes';
 // import swaggerDocs from "./docs/swagger"
 import session from 'express-session';
 import cookieParser from 'cookie-parser';
+const multer  = require('multer');
 
 
 const app = express();
@@ -46,6 +47,9 @@ console.log('server running on http://localhost:5646');
 const { swaggerUi, swaggerDocs } = require('./docs/swagger');
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
  });
+
+// Serve static files
+app.use(express.static('public'));
 
 
  

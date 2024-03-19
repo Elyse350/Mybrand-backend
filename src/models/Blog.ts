@@ -6,6 +6,7 @@ export interface IBlog extends Document {
     title: string;
     category: string;
     description: string;
+    image: string;
     // author: Types.ObjectId[];
     comments:Types.ObjectId[];
     likes:Types.ObjectId[]; // Change this to an array of ObjectId references
@@ -23,6 +24,10 @@ const blogSchema: Schema = new Schema<IBlog>({
         required: true
     },
     description:{
+        type: String,
+        required: true
+    },
+    image:{
         type: String,
         required: true
     },
